@@ -20,11 +20,13 @@ import (
 	"flag"
 	"os"
 
+	networkingv1beta1 "github.com/dulltz/ingress-group-validator/api/networking/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -63,6 +65,9 @@ func main() {
 	}
 
 	// +kubebuilder:scaffold:builder
+
+	setupLog.Info("setting up webhook server")
+	mgr.GetWebhookServer().Register("/validate-networking-v1beta1-ingress", &webhook.Admission{Handler: &networkingv1beta1.IngressValidator{}})
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {

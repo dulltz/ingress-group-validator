@@ -1,4 +1,4 @@
-package v1beta1
+package api
 
 import (
 	"context"
@@ -13,12 +13,12 @@ import (
 
 // IngressValidator validates Ingresses
 type IngressValidator struct {
-	decoder *admission.Decoder
+	Decoder *admission.Decoder
 }
 
 func (v IngressValidator) Handle(ctx context.Context, req admission.Request) admission.Response {
 	ing := &netv1beta1.Ingress{}
-	if err := v.decoder.Decode(req, ing); err != nil {
+	if err := v.Decoder.Decode(req, ing); err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
 	}
 	if err := pkg.ValidateGroupName(ing); err != nil {

@@ -12,9 +12,9 @@ const groupNameAnnotation = "alb.ingress.kubernetes.io/group.name"
 var _ = Describe("valid cases for Ingress validator", func() {
 	It("should allow creating Ingress with namespaced group name", func() {
 		ing := &netv1beta1.Ingress{}
-		ing.Name = "allow1"
+		ing.Name = "allow-creating-namespaced"
 		ing.Namespace = "default"
-		ing.Annotations = map[string]string{groupNameAnnotation: "default/test"}
+		ing.Annotations = map[string]string{groupNameAnnotation: ing.Namespace + "/test"}
 		ing.Spec.Backend = &netv1beta1.IngressBackend{ServiceName: "test", ServicePort: intstr.FromInt(8080)}
 		err := k8sClient.Create(testCtx, ing)
 		Expect(err).NotTo(HaveOccurred())
@@ -22,7 +22,7 @@ var _ = Describe("valid cases for Ingress validator", func() {
 
 	It("should allow creating Ingress that does not belong to any group", func() {
 		ing := &netv1beta1.Ingress{}
-		ing.Name = "allow2"
+		ing.Name = "allow-creating-empty"
 		ing.Namespace = "default"
 		ing.Spec.Backend = &netv1beta1.IngressBackend{ServiceName: "test", ServicePort: intstr.FromInt(8080)}
 		err := k8sClient.Create(testCtx, ing)
@@ -33,7 +33,7 @@ var _ = Describe("valid cases for Ingress validator", func() {
 var _ = Describe("invalid cases for Ingress", func() {
 	It("should deny creating Ingress with namespaced group name", func() {
 		ing := &netv1beta1.Ingress{}
-		ing.Name = "deny1"
+		ing.Name = "deny-creating-not-namespaced"
 		ing.Namespace = "default"
 		ing.Annotations = map[string]string{groupNameAnnotation: "test"}
 		ing.Spec.Backend = &netv1beta1.IngressBackend{ServiceName: "test", ServicePort: intstr.FromInt(8080)}
@@ -41,9 +41,9 @@ var _ = Describe("invalid cases for Ingress", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("should deny updating Service by adding invalid group name", func() {
+	It("should deny updating Ingress by adding invalid group name", func() {
 		ing := &netv1beta1.Ingress{}
-		ing.Name = "deny2"
+		ing.Name = "deny-updating-not-namespaced"
 		ing.Namespace = "default"
 		ing.Spec.Backend = &netv1beta1.IngressBackend{ServiceName: "test", ServicePort: intstr.FromInt(8080)}
 		err := k8sClient.Create(testCtx, ing)

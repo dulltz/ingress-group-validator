@@ -9,7 +9,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: controller-manager
-  namespace: system
   labels:
     control-plane: controller-manager
 spec:
@@ -21,6 +20,8 @@ spec:
     metadata:
       labels:
         control-plane: controller-manager
+      annotations:
+        kubectl.kubernetes.io/default-logs-container: manager
     spec:
       containers:
       - command:
@@ -28,6 +29,7 @@ spec:
         args:
         - --enable-leader-election
         image: controller:latest
+        imagePullPolicy: IfNotPresent
         name: manager
         resources:
           limits:

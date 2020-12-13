@@ -9,8 +9,8 @@ webhooks:
 - clientConfig:
     caBundle: Cg==
     service:
-      name: webhook-service
-      namespace: system
+      name: ingress-group-validator-webhook-service
+      namespace: default
       path: /validate-networking-v1beta1-ingress
   failurePolicy: Fail
   name: vingress.kb.io

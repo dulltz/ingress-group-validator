@@ -22,5 +22,5 @@ func ValidateGroupName(ing metav1.Object) error {
 		return nil
 	}
 
-	return fmt.Errorf("deny '%s' since the %s annotation does not start with '%s' namespaced", ing.GetName(), groupNameAnnotation, desiredPrefix)
+	return fmt.Errorf("deny '%s' since the %s annotation does not start with '%s'", ing.GetName(), groupNameAnnotation, desiredPrefix)
 }

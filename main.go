@@ -27,6 +27,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -67,7 +68,14 @@ func main() {
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("setting up webhook server")
-	mgr.GetWebhookServer().Register("/validate-networking-v1beta1-ingress", &webhook.Admission{Handler: &api.IngressValidator{}})
+	dec, err := admission.NewDecoder(scheme)
+	if err != nil {
+		setupLog.Error(err, "unable to construct decoder")
+		os.Exit(1)
+	}
+	mgr.GetWebhookServer().Register("/validate-networking-v1beta1-ingress", &webhook.Admission{
+		Handler: &api.IngressValidator{Decoder: dec},
+	})
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {

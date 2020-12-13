@@ -4,7 +4,7 @@ metadata:
   name: invalid
   namespace: default
   annotations:
-    alb.ingress.kubernetes.io/group.name: kube-system/test
+    alb.ingress.kubernetes.io/group.name: test
 spec:
   rules:
     - http:
